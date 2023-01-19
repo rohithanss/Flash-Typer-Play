@@ -1,6 +1,9 @@
 <script setup>
-import { ref, computed } from "vue";
+import axios from "axios";
+import { ref, computed, inject } from "vue";
 import PlayerTrack from "../components/PlayerTrack.vue";
+
+const url = inject("backendURL");
 
 const text = ref("");
 const wordsPerMin = ref(0);
@@ -21,7 +24,7 @@ const playerPos = ref({
   left: "0%",
 });
 const sam = ref(
-  `My name is Rohit Hans, I am from Malerkotla, a small city also famous as mini pakistan of Punjab, because of majority of population is belonged to muslim community. I completed my schooling from Malerkotla.`
+  `Some thing Went wrong while fetching the text, Try again later, or you can use this text also for practice.`
 );
 
 const sample = ref(sam.value.split(" "));
@@ -119,6 +122,33 @@ function playerReady() {
     }
   }, 1000);
 }
+
+async function getText() {
+  try {
+    let res = await axios.get(`${url}/text`);
+    res = await res.data;
+    if (res.status == "success") {
+      console.log(res.text);
+      sample.value = res.text.text.split(" ");
+    } else {
+      toast.add({
+        severity: "warn",
+        summary: "Starting Race",
+        detail: "Error occurred while starting race, try again later",
+        life: 3000,
+      });
+    }
+  } catch (err) {
+    toast.add({
+      severity: "warn",
+      summary: "Starting Race",
+      detail: "Error occurred while starting race, try again later",
+      life: 3000,
+    });
+    console.log("error occurred while starting race, try again later");
+  }
+}
+getText();
 </script>
 
 <template>
@@ -170,6 +200,7 @@ function playerReady() {
       :maxlength="maxLength"
       :class="{ danger: !correct }"
       placeholder="Type here"
+      :autofocus="startIn == 0"
       :disabled="isCompleted || startIn != 0"
     />
     <div class="btnContainer">
@@ -274,6 +305,9 @@ th {
   color: var(--text-color);
 }
 .danger {
+  background-color: rgba(206, 77, 27, 0.462);
+}
+input.danger {
   background-color: rgba(206, 77, 27, 0.462);
 }
 a {

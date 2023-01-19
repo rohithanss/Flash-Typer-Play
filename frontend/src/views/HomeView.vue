@@ -75,7 +75,7 @@ const startRace = () => {
 
 #card-container {
   display: grid;
-  gap: 20px;
+  gap: 30px;
   width: 80%;
   grid-template-areas:
     "startRace startRace"
