@@ -1,5 +1,12 @@
 <script setup>
 import { RouterLink } from "vue-router";
+
+const props = defineProps(["profile"]);
+const emits = defineEmits(["logout"]);
+
+function logout() {
+  emits("logout");
+}
 </script>
 <template>
   <div id="container">
@@ -8,7 +15,7 @@ import { RouterLink } from "vue-router";
         ><img class="logo" src="../assets/flash-type-h.png" alt="logo"
       /></RouterLink>
     </div>
-    <div class="options">
+    <div class="guestOptions options" v-if="props.profile.status == false">
       <h3><RouterLink to="/">Home</RouterLink></h3>
       <h3><RouterLink to="/about">About</RouterLink></h3>
       <Button class="p-button-success"
@@ -17,6 +24,15 @@ import { RouterLink } from "vue-router";
       <Button class="p-button-warning"
         ><RouterLink to="/signup">Signup</RouterLink></Button
       >
+    </div>
+    <div class="userOptions options" v-if="props.profile.status == true">
+      <RouterLink to="/"><h3>Home</h3></RouterLink>
+      <RouterLink to="/about"><h3>About</h3></RouterLink>
+      <RouterLink to="/racetexts" v-if="props.profile.role == 'admin'"
+        ><h3>Race Texts</h3></RouterLink
+      >
+      <Button class="p-button-success">{{ props.profile.name }}</Button>
+      <Button class="p-button-warning" @click="logout">Logout</Button>
     </div>
   </div>
 </template>
