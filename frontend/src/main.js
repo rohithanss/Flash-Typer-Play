@@ -28,8 +28,8 @@ import Toolbar from "primevue/toolbar";
 
 const app = createApp(App);
 
-app.provide("backendURL", "http://localhost:7070");
-// app.provide("backendURL", "https://rohit-blog-app.onrender.com");
+// app.provide("backendURL", "http://localhost:7070");
+app.provide("backendURL", "https://flash-typer.onrender.com");
 app.provide("isLoggedIn", isLoggedIn);
 
 app.component("Toast", Toast);

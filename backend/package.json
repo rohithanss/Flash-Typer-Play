@@ -17,6 +17,7 @@
     "ioredis": "^5.2.5",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.8.4",
-    "nodemailer": "^6.9.0"
+    "nodemailer": "^6.9.0",
+    "nodemon": "^2.0.20"
   }
 }
