@@ -1,5 +1,4 @@
 <template>
-  <Toast />
   <div>
     <div class="card">
       <Toolbar class="mb-4">
@@ -40,7 +39,7 @@
         </template>
 
         <Column
-          field="createdAt"
+          field="updatedAt"
           header="Date"
           :sortable="true"
           :style="{ 'min-width': '10rem', 'align-items': 'center' }"
@@ -50,17 +49,17 @@
           field="title"
           header="Title"
           :sortable="true"
-          style="min-width: 16rem"
+          style="min-width: 12rem"
         ></Column>
 
         <Column
           field="text"
           header="Text"
           :sortable="true"
-          style="max-width: 45rem"
+          style="max-width: 40rem"
         ></Column>
 
-        <Column :exportable="false" style="min-width: 8rem">
+        <Column :exportable="false" style="min-width: 10rem">
           <template #body="slotProps">
             <Button
               icon="pi pi-pencil"
@@ -170,7 +169,7 @@ const url = inject("backendURL");
 onMounted(async () => {
   let allTexts = await getTexts();
 
-  texts.value = [await allTexts.text];
+  texts.value = await allTexts.data;
 });
 
 const toast = useToast();
@@ -188,7 +187,7 @@ const submitted = ref(false);
 
 const getTexts = async () => {
   try {
-    let allTexts = await axios.get(`${url}/text`, {
+    let allTexts = await axios.get(`${url}/text/all`, {
       headers: {
         authorization: `bearer ${localStorage.getItem("token")}`,
       },
@@ -205,6 +204,7 @@ const openNew = () => {
   submitted.value = false;
   textDialog.value = true;
 };
+
 const hideDialog = () => {
   textDialog.value = false;
   submitted.value = false;
@@ -312,40 +312,40 @@ const confirmDeleteText = (prod) => {
   text.value = { ...prod };
   deleteTextDialog.value = true;
 };
+
 const deleteText = async () => {
   let { _id } = text.value;
 
   text.value = {};
   try {
-    let res = await axios.delete(`${url}/admin/user/${_id}`, {
+    let res = await axios.delete(`${url}/text/delete/${_id}`, {
       headers: {
         authorization: `bearer ${localStorage.getItem("token")}`,
       },
-      withCredentials: true,
     });
     res = res.data;
     if (res.status == "success") {
       toast.add({
         severity: "success",
-        summary: "Deleting User",
-        detail: "User Deleted Successfully.",
+        summary: "Deleting Text",
+        detail: "Text Deleted Successfully.",
         life: 3000,
       });
     } else {
       toast.add({
         severity: "warn",
-        summary: "Deleting User",
+        summary: "Deleting Text",
         detail:
-          "Something went wrong while Deleting user info, try again after some time.",
+          "Something went wrong while Deleting Text info, try again after some time.",
         life: 3000,
       });
     }
   } catch (err) {
     toast.add({
       severity: "warn",
-      summary: "Deleting User",
+      summary: "Deleting Text",
       detail:
-        "Something went wrong while Deleting user info, try again after some time.",
+        "Something went wrong while Deleting Text info, try again after some time.",
       life: 3000,
     });
   }

@@ -1,5 +1,5 @@
 <script setup>
-import axios, { all } from "axios";
+import axios from "axios";
 import { io } from "socket.io-client";
 import { ref, computed, inject } from "vue";
 import PlayerTrack from "../components/PlayerTrack.vue";
@@ -9,6 +9,7 @@ const url = inject("backendURL");
 const emits = defineEmits(["quitRace"]);
 
 const text = ref("");
+const wordsPerMin = ref(0);
 const isCongrats = ref({ display: "none" });
 const isResult = ref(false);
 const isPlayerReady = ref(false);
@@ -20,10 +21,11 @@ const wordTyped = ref(0);
 const timeConsumed = ref(0);
 const wrongIdx = ref(-1);
 const wrongCount = ref(0);
-let socketId = null;
-const allPlayers = ref([]);
-const socketRoomDetails = ref(null);
+const playerRank = ref(0);
 
+const playerPos = ref({
+  left: "0%",
+});
 const sam = ref(
   `Some thing Went wrong while fetching the text, Try again later, or you can use this text also for practice.`
 );
@@ -40,6 +42,7 @@ const isCompleted = computed(() => {
     (remainTime.value == 0 && timeConsumed.value == 0)
   ) {
     timeConsumed.value = allotedTime.value - remainTime.value;
+    playerRank.value++;
   }
   return (
     (text.value == sample.value[wordTyped.value] &&
@@ -91,15 +94,9 @@ function calculateTime(totalWords, wordTyped, seconds) {
   let wordsRate = totalWords / 20;
   let move = (wordTyped / wordsRate) * 4.9;
 
-  let wpm = Math.round((60 / seconds) * wordTyped);
-  socketId.emit(
-    "updateStats",
-    socketRoomDetails.value.roomId,
-    allPlayers.value[0].playerId,
-    wpm,
-    move,
-    isCompleted.value
-  );
+  let wpm = (60 / seconds) * wordTyped;
+  wordsPerMin.value = Math.round(wpm);
+  playerPos.value = move;
 }
 
 function startTimer() {
@@ -116,54 +113,50 @@ function startTimer() {
   }, 1000);
 }
 
+function playerReady() {
+  isPlayerReady.value = true;
+  let startInId = setInterval(() => {
+    startIn.value--;
+    if (startIn.value == 0) {
+      clearInterval(startInId);
+      startTimer();
+    }
+  }, 1000);
+}
+
 function quitRace() {
-  if (socketId != null) {
-    socketId.disconnect();
-    socketId = null;
-  }
   emits("quitRace");
 }
 
-async function connectSocket() {
-  socketId = io(`${url}`, {
-    path: "/play",
-  });
-
-  socketId.on("room-joined", (room, text, players) => {
-    socketRoomDetails.value = room;
-    sample.value = text.text.split(" ");
-    allotedTime.value = sample.value.length * (60 / 20);
-    remainTime.value = sample.value.length * (60 / 20);
-    allPlayers.value = players;
-  });
-
-  socketId.on("newPlayer", (newPlayer) => {
-    allPlayers.value.push(newPlayer);
-  });
-
-  socketId.on("startingIn", (timer) => {
-    isPlayerReady.value = true;
-    startIn.value = timer;
-  });
-  socketId.on("start", (msg) => {
-    console.log(msg);
-    startTimer();
-  });
-
-  socketId.on("playerStats", (stats) => {
-    for (let i = 0; i < allPlayers.value.length; i++) {
-      let el = allPlayers.value[i];
-      if (el.playerId == stats.playerId) {
-        el.speed = stats.speed;
-        el.playerPos = stats.playerPos;
-        el.playerRank = stats.playerRank;
-        break;
-      }
+async function getText() {
+  try {
+    let res = await axios.get(`${url}/text`);
+    res = await res.data;
+    if (res.status == "success") {
+      console.log(res.text);
+      sample.value = res.text.text.split(" ");
+      allotedTime.value = sample.value.length * (60 / 20);
+      remainTime.value = sample.value.length * (60 / 20);
+    } else {
+      toast.add({
+        severity: "warn",
+        summary: "Starting Race",
+        detail: "Error occurred while starting race, try again later",
+        life: 3000,
+      });
     }
-  });
+  } catch (err) {
+    toast.add({
+      severity: "warn",
+      summary: "Starting Race",
+      detail: "Error occurred while starting race, try again later",
+      life: 3000,
+    });
+    console.log("error occurred while starting race, try again later");
+  }
 }
 
-connectSocket();
+getText();
 </script>
 
 <template>
@@ -190,18 +183,10 @@ connectSocket();
     </div>
     <h1 :style="isCongrats">Congratulations</h1>
     <PlayerTrack
-      v-for="{
-        playerId,
-        name: playername,
-        speed,
-        playerRank,
-        playerPos,
-      } in allPlayers"
       :playerPos="playerPos"
-      :playerName="playername"
-      :WPM="speed"
+      :playerName="'playername'"
+      :WPM="wordsPerMin"
       :rank="playerRank"
-      :key="playerId"
     />
 
     <div class="textBox">
@@ -223,6 +208,12 @@ connectSocket();
       :disabled="isCompleted || startIn != 0"
     />
     <div class="btnContainer">
+      <Button
+        v-if="!isPlayerReady"
+        @click="playerReady"
+        class="p-button-success"
+        >Ready</Button
+      >
       <Button @click="quitRace" class="p-button-warning">Quit Race</Button>
       <Button
         class="p-button-success"
@@ -241,7 +232,7 @@ connectSocket();
       <table>
         <tr>
           <th>Your Speed:</th>
-          <td>{{ allPlayers.value[0].speed }} WPM</td>
+          <td>{{ wordsPerMin }} WPM</td>
         </tr>
 
         <tr>
