@@ -1,19 +1,26 @@
 <script setup>
+import { computed } from "vue";
+
 const props = defineProps(["playerPos", "playerName", "WPM", "rank"]);
 
 const ranks = {
+  0: "no",
   1: "1st Place",
   2: "2nd Place",
   3: "3rd Place",
   4: "4th Place",
   5: "5th Place",
 };
+
+const playerStyle = computed(() => {
+  return { left: `${props.playerPos}%` };
+});
 </script>
 
 <template>
   <div id="container">
     <div class="track">
-      <div :style="props.playerPos" class="car">{{ props.playerName[0] }}</div>
+      <div :style="playerStyle" class="car">{{ props.playerName[0] }}</div>
     </div>
     <div>
       <p v-if="props.rank">{{ ranks[props.rank] }}</p>
