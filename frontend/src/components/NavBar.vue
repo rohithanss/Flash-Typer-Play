@@ -12,7 +12,7 @@ function logout() {
   <div id="container">
     <div>
       <RouterLink to="/"
-        ><img class="logo" src="images/flash-type-h.png" alt="logo"
+        ><img class="logo" src="../assets/flash-type-h.png" alt="logo"
       /></RouterLink>
     </div>
     <div class="guestOptions options" v-if="props.profile.status == false">
