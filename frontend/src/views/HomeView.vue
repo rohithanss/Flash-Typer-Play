@@ -34,15 +34,6 @@ const createPersonalTrack = () => {
       <div v-show="!isRaceTrack" class="startRaceCard cards">
         <div>
           <div class="logo"><img src="../assets/flash-typer.png" alt="" /></div>
-          <div class="logo" style="display: none">
-            <img src="../assets/flash-bit.png" alt="" />
-          </div>
-          <div class="logo" style="display: none">
-            <img src="../assets/deadpoolBit.png" alt="" />
-          </div>
-          <div class="logo" style="display: none">
-            <img src="../assets/captainBit.png" alt="" />
-          </div>
           <div>
             <h2>Flash Typer Play - The Global Typing Competition</h2>
             <p>Increase your typing speed while racing against others!</p>
