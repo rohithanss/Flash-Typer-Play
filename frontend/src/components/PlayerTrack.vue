@@ -47,7 +47,9 @@ const playerStyle = computed(() => {
         </div>
         <img
           :src="[
-            props.idx == 0 ? 'images/flashBit.png' : `images/${props.image}`,
+            props.idx == 0
+              ? '../assets/images/flashBit.png'
+              : `../assets/images/${props.image}`,
           ]"
           alt=""
           class="emoji"
