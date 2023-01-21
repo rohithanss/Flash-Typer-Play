@@ -4,8 +4,10 @@ require("dotenv").config();
 
 const redis = require("../services/redis.js");
 const tokenAuth = require("../middlewares/tokenAuth");
+
 const UserModel = require("../models/UserModel");
 const generateToken = require("../services/generateToken.js");
+const authorise = require("../middlewares/authorise.js");
 
 const userRouter = Router();
 
@@ -105,7 +107,7 @@ userRouter.get("/profile", tokenAuth, async (req, res) => {
     res.send({ name, userId: _id, role, status: "success" });
   } catch (err) {
     console.log(err);
-    res.send({ msg: "something Went wrong! try again laer", status: "error" });
+    res.send({ msg: "something Went wrong! try again later", status: "error" });
   }
 });
 
@@ -166,4 +168,73 @@ userRouter.post("/resetpassword", async (req, res) => {
     }
   }
 });
+
+userRouter.get("/topplayers", async (req, res) => {
+  try {
+    let topPlayers = await UserModel.aggregate()
+      .sort({ speed: -1 })
+      .limit(10)
+      .project({ password: 0, _id: 0 });
+
+    res.send({ players: topPlayers, status: "success" });
+  } catch (err) {
+    console.log(err);
+    res.send({
+      msg: "error while fetching the top users from db",
+      status: "error",
+    });
+  }
+});
+
+userRouter.get(
+  "/allplayers",
+  tokenAuth,
+  authorise(["admin"]),
+  async (req, res) => {
+    try {
+      let users = await UserModel.find({ role: { $ne: "admin" } });
+      res.send({ msg: "Users fetched Successfully", users, status: "success" });
+    } catch (err) {
+      res.send({ msg: "something went wrong", status: "error" });
+    }
+  }
+);
+
+userRouter.patch(
+  "/edit/:userId",
+  tokenAuth,
+  authorise(["admin"]),
+  async (req, res) => {
+    try {
+      let userId = req.params.userId;
+      let { name, email } = req.body;
+
+      let resp = await UserModel.findByIdAndUpdate(
+        { _id: userId },
+        { $set: { name, email } }
+      );
+      res.send({ msg: "user updated successfully", status: "success" });
+    } catch (err) {
+      res.send({ msg: "something went wrong", status: "error" });
+      console.log(err);
+    }
+  }
+);
+
+userRouter.delete(
+  "/delete/:userId",
+  tokenAuth,
+  authorise(["admin"]),
+  async (req, res) => {
+    try {
+      let userId = req.params.userId;
+
+      let resp = await UserModel.findByIdAndDelete({ _id: userId });
+      res.send({ msg: "user deleted successfully", status: "success" });
+    } catch (err) {
+      res.send({ msg: "something went wrong", status: "error" });
+      console.log(err);
+    }
+  }
+);
 module.exports = userRouter;

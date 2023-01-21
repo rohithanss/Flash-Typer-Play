@@ -1,7 +1,14 @@
 <script setup>
 import { computed } from "vue";
 
-const props = defineProps(["playerPos", "playerName", "WPM", "rank"]);
+const props = defineProps([
+  "playerPos",
+  "playerName",
+  "WPM",
+  "rank",
+  "image",
+  "idx",
+]);
 
 const ranks = {
   0: "no",
@@ -20,10 +27,37 @@ const playerStyle = computed(() => {
 <template>
   <div id="container">
     <div class="track">
-      <div :style="playerStyle" class="car">{{ props.playerName[0] }}</div>
+      <div :style="playerStyle" class="car">
+        <div
+          :style="{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }"
+        >
+          <p :style="{ fontSize: '14px', color: 'var(--text-color)' }">
+            {{ props.playerName }}
+          </p>
+          <p
+            v-if="props.idx == 0"
+            :style="{ fontSize: '12px', color: 'var(--text-color-secondary)' }"
+          >
+            You
+          </p>
+        </div>
+        <img
+          :src="[
+            props.idx == 0 ? 'images/flashBit.png' : `images/${props.image}`,
+          ]"
+          alt=""
+          class="emoji"
+        />
+      </div>
     </div>
-    <div>
-      <p v-if="props.rank">{{ ranks[props.rank] }}</p>
+    <div class="stats">
+      <p v-if="props.rank" style="font-size: 14px; color: var(--text-color)">
+        {{ ranks[props.rank] }}
+      </p>
       <p>{{ props.WPM }} WPM</p>
     </div>
   </div>
@@ -36,6 +70,12 @@ const playerStyle = computed(() => {
   align-items: center;
   width: 100%;
 }
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .track {
   display: flex;
   width: 90%;
@@ -46,13 +86,17 @@ const playerStyle = computed(() => {
 }
 .car {
   height: 50px;
-  width: 50px;
-  border-radius: 50%;
-  border: 2px solid red;
+
   position: absolute;
   transition: all 250ms;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.emoji {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
 }
 </style>
