@@ -218,7 +218,7 @@ connectSocket();
         :WPM="speed"
         :rank="playerRank"
         :idx="idx"
-        :image="[playername != 'Guest' ? 'captainBit.png' : 'deadpoolBit.png']"
+        :image="[playername != 'Guest' ? 'oaCzKZQ.png' : 'XMzFko0.png']"
         :key="playerId"
       />
 
