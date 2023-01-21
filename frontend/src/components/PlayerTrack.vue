@@ -48,8 +48,8 @@ const playerStyle = computed(() => {
         <img
           :src="[
             props.idx == 0
-              ? '../assets/images/flashBit.png'
-              : `../assets/images/${props.image}`,
+              ? '../src/assets/images/flashBit.png'
+              : `../src/assets/images/${props.image}`,
           ]"
           alt=""
           class="emoji"
