@@ -12,12 +12,12 @@ function logout() {
   <div id="container">
     <div>
       <RouterLink to="/"
-        ><img class="logo" src="../assets/flash-type-h.png" alt="logo"
+        ><img class="logo" src="images/flash-type-h.png" alt="logo"
       /></RouterLink>
     </div>
     <div class="guestOptions options" v-if="props.profile.status == false">
       <h3><RouterLink to="/">Home</RouterLink></h3>
-      <h3><RouterLink to="/about">About</RouterLink></h3>
+
       <Button class="p-button-success"
         ><RouterLink to="/login">Login</RouterLink></Button
       >
@@ -27,7 +27,9 @@ function logout() {
     </div>
     <div class="userOptions options" v-if="props.profile.status == true">
       <RouterLink to="/"><h3>Home</h3></RouterLink>
-      <RouterLink to="/about"><h3>About</h3></RouterLink>
+      <RouterLink to="/allplayers" v-if="props.profile.role == 'admin'"
+        ><h3>Players</h3></RouterLink
+      >
       <RouterLink to="/racetexts" v-if="props.profile.role == 'admin'"
         ><h3>Race Texts</h3></RouterLink
       >
@@ -75,5 +77,10 @@ a {
 a:hover,
 a.router-link-active {
   color: var(--text-color-secondary);
+}
+@media screen and (max-width: 655px) {
+  .logo {
+    width: 50%;
+  }
 }
 </style>

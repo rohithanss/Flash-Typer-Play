@@ -1,12 +1,23 @@
 <script setup>
 import { ref } from "vue";
+import { useToast } from "primevue/usetoast";
+
 import RaceTrack from "../components/RaceTrack.vue";
 import LeaderBoard from "../components/LeaderBoard.vue";
 
+const toast = useToast();
 const isRaceTrack = ref(false);
 
 const startRace = () => {
   isRaceTrack.value = !isRaceTrack.value;
+};
+const createPersonalTrack = () => {
+  toast.add({
+    severity: "warn",
+    summary: "Create Room Track",
+    detail: "This Feature is under Construction.",
+    life: 3000,
+  });
 };
 </script>
 <template>
@@ -22,7 +33,7 @@ const startRace = () => {
     <div id="card-container">
       <div v-show="!isRaceTrack" class="startRaceCard cards">
         <div>
-          <div class="logo"><img src="../assets/flash-typer.png" alt="" /></div>
+          <div class="logo"><img src="images/flash-typer.png" alt="" /></div>
           <div>
             <h2>Flash Typer Play - The Global Typing Competition</h2>
             <p>Increase your typing speed while racing against others!</p>
@@ -35,28 +46,35 @@ const startRace = () => {
       <div v-show="!isRaceTrack" class="cards practiceCard">
         <div>
           <h2>Typing Test</h2>
-          <p>Increase your typing speed while racing against others!</p>
+          <p>Improve your typing skills on your own!</p>
         </div>
-        <Button @click="startRace" class="practiceBtn p-button-info"
-          >Practice Yourself</Button
+        <RouterLink to="/practicetrack">
+          <Button class="practiceBtn p-button-info"
+            >Practice Yourself</Button
+          ></RouterLink
         >
       </div>
       <div v-show="!isRaceTrack" class="cards createTrackCard">
         <div>
-          <h2>Race your friends</h2>
-          <p>Increase your typing speed while racing against others!</p>
+          <h2>Race with your friends</h2>
+          <p>Create your own racetrack and play with friends!</p>
         </div>
-        <Button @click="startRace" class="createTrackBtn p-button-warning"
+        <Button
+          @click="createPersonalTrack"
+          class="createTrackBtn p-button-warning"
           >Create Racetrack</Button
         >
       </div>
       <div class="cards createAccountCard">
         <div>
           <h2>Record your races with a TypeRacer Account!</h2>
-          <p>Increase your typing speed while racing against others!</p>
+          <p>
+            Save your race history and scores. Customize your profile and car.
+            It's free, why not?
+          </p>
         </div>
-        <Button @click="startRace" class="createAccountBtn p-button-warning"
-          >Create Account</Button
+        <RouterLink class="createAccountBtn" to="/signup">
+          <Button class="p-button-warning">Create Account</Button></RouterLink
         >
       </div>
     </div>
@@ -88,8 +106,6 @@ const startRace = () => {
   padding: 20px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   color: var(--primary-color);
-  min-height: 20vh;
-
   width: 100%;
 }
 
@@ -114,6 +130,7 @@ const startRace = () => {
   align-items: center;
   grid-area: createAccount;
   background-color: var(--primary-color);
+  gap: 15px;
   color: white;
 }
 
@@ -136,18 +153,22 @@ const startRace = () => {
 }
 .startRaceCard .startBtn {
   font-size: 30px;
-  width: 30%;
+  margin-top: 15px;
+  width: 35%;
 }
 
 .p-button {
   justify-content: center;
   font-size: 20px;
-  width: 50%;
+  width: 60%;
   font-weight: 600;
 }
 
-.createAccountCard .p-button {
+.createAccountBtn {
   width: 30%;
+}
+.createAccountCard .p-button {
+  width: 100%;
 }
 
 .v-enter-active,
@@ -158,5 +179,69 @@ const startRace = () => {
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+
+@media screen and (max-width: 975px) {
+  #card-container {
+    grid-template-areas:
+      "startRace startRace"
+      "practice practice"
+      "createTrack createTrack"
+      "createAccount createAccount";
+  }
+  .startRaceCard .startBtn {
+    width: 40%;
+    font-size: 20px;
+  }
+  .logo {
+    width: 16%;
+  }
+  .createAccountCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .p-button {
+    width: 40%;
+  }
+  .createAccountBtn {
+    width: 40%;
+  }
+}
+@media screen and (max-width: 655px) {
+  .startRaceCard .startBtn {
+    width: 50%;
+    font-size: 20px;
+  }
+  .logo {
+    display: none;
+  }
+  .p-button {
+    width: 50%;
+  }
+  .createAccountBtn {
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 530px) {
+  #card-container {
+    width: 90%;
+  }
+  .startRaceCard .startBtn {
+    width: 60%;
+    font-size: 20px;
+  }
+  .cards h2 {
+    font-size: 20px;
+  }
+  .logo {
+    display: none;
+  }
+  .p-button {
+    width: 60%;
+  }
+  .createAccountBtn {
+    width: 60%;
+  }
 }
 </style>

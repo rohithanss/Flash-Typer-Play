@@ -1,14 +1,17 @@
 <script setup>
-import axios, { all } from "axios";
+import axios from "axios";
 import { io } from "socket.io-client";
 import { ref, computed, inject } from "vue";
 import PlayerTrack from "../components/PlayerTrack.vue";
+import { useToast } from "primevue/usetoast";
+const toast = useToast();
 
 const url = inject("backendURL");
 
 const emits = defineEmits(["quitRace"]);
 
 const text = ref("");
+const isTextFetched = ref(null);
 const isCongrats = ref({ display: "none" });
 const isResult = ref(false);
 const isPlayerReady = ref(false);
@@ -89,7 +92,7 @@ const sampleIdx = computed(() => {
 
 function calculateTime(totalWords, wordTyped, seconds) {
   let wordsRate = totalWords / 20;
-  let move = (wordTyped / wordsRate) * 4.9;
+  let move = (wordTyped / wordsRate) * 4.7;
 
   let wpm = Math.round((60 / seconds) * wordTyped);
   socketId.emit(
@@ -104,7 +107,8 @@ function calculateTime(totalWords, wordTyped, seconds) {
 
 function startTimer() {
   intervalId.value = setInterval(() => {
-    remainTime.value--;
+    --remainTime.value;
+    console.log(remainTime.value);
     if (remainTime.value == 0) {
       clearInterval(intervalId.value);
 
@@ -127,14 +131,20 @@ function quitRace() {
 async function connectSocket() {
   socketId = io(`${url}`, {
     path: "/play",
+    auth: {
+      token: localStorage.getItem("token"),
+    },
   });
-
+  socketId.on("connect_error", (err) => {
+    isTextFetched.value = false;
+  });
   socketId.on("room-joined", (room, text, players) => {
     socketRoomDetails.value = room;
     sample.value = text.text.split(" ");
-    allotedTime.value = sample.value.length * (60 / 20);
-    remainTime.value = sample.value.length * (60 / 20);
+    allotedTime.value = Math.round(sample.value.length * (60 / 20));
+    remainTime.value = Math.round(sample.value.length * (60 / 20));
     allPlayers.value = players;
+    isTextFetched.value = true;
   });
 
   socketId.on("newPlayer", (newPlayer) => {
@@ -163,118 +173,142 @@ async function connectSocket() {
   });
 }
 
+function raceAgain() {
+  toast.add({
+    severity: "warn",
+    summary: "Race Again",
+    detail: "Feature is not yet live!",
+    life: 4000,
+  });
+}
+
 connectSocket();
 </script>
 
 <template>
-  <div class="about">
-    <div class="timeDiv">
-      <div>
-        {{
-          startIn == 0
-            ? "Race has started, type the following Paragraph!"
-            : "Race is starting soon, Please wait!"
-        }}
+  <div id="raceContainer">
+    <div v-if="isTextFetched == true" class="about">
+      <div class="timeDiv">
+        <div>
+          {{
+            startIn == 0
+              ? "Race has started, type the following Paragraph!"
+              : "Race is starting soon, Please wait!"
+          }}
+        </div>
+        <div v-if="startIn == 0">Time remains: {{ remainTime + " Secs" }}</div>
+        <div
+          v-else-if="!isPlayerReady"
+          :style="{ display: 'flex', gap: '10px', alignItems: 'center' }"
+        >
+          <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+          <h3>Waiting for Players!</h3>
+        </div>
+        <div class="startInDiv" v-else>
+          <h3>Race is starting in {{ startIn }} Secs</h3>
+        </div>
       </div>
-      <div v-if="startIn == 0">Time remains: {{ remainTime + " Secs" }}</div>
-      <div
-        v-else-if="!isPlayerReady"
-        :style="{ display: 'flex', gap: '10px', alignItems: 'center' }"
-      >
-        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-        <h3>Waiting for Players!</h3>
+      <h1 :style="isCongrats">Congratulations</h1>
+      <PlayerTrack
+        v-for="(
+          { playerId, name: playername, speed, playerRank, playerPos }, idx
+        ) of allPlayers"
+        :playerPos="playerPos"
+        :playerName="playername"
+        :WPM="speed"
+        :rank="playerRank"
+        :idx="idx"
+        :image="[playername != 'Guest' ? 'captainBit.png' : 'deadpoolBit.png']"
+        :key="playerId"
+      />
+
+      <div class="textBox">
+        <span
+          v-for="(el, index) in sample"
+          :class="{ danger: index == sampleIdx }"
+        >
+          {{ el + " " }}
+        </span>
       </div>
-      <div class="startInDiv" v-else>
-        <h3>Race is starting in {{ startIn }} Secs</h3>
+      <InputText
+        type="text"
+        v-model="text"
+        class="inputText"
+        :maxlength="maxLength"
+        :class="{ danger: !correct }"
+        placeholder="Type here"
+        :autofocus="startIn == 0"
+        :disabled="isCompleted || startIn != 0"
+      />
+      <div class="btnContainer">
+        <Button @click="quitRace" class="p-button-warning">Quit Race</Button>
+        <Button class="p-button-success" v-if="isCompleted" @click="raceAgain"
+          >Race Again</Button
+        >
+      </div>
+
+      <div class="resultStats" v-if="isCompleted">
+        <h3 :style="{ marginBottom: '10px' }">Your performance:</h3>
+        <table>
+          <tr>
+            <th>Your Speed:</th>
+            <td>{{ allPlayers[0].speed }} WPM</td>
+          </tr>
+
+          <tr>
+            <th>time:</th>
+            <td>{{ timeConsumed }} Secs</td>
+          </tr>
+          <tr>
+            <th>Accuracy:</th>
+            <td>Under Construction</td>
+          </tr>
+        </table>
       </div>
     </div>
-    <h1 :style="isCongrats">Congratulations</h1>
-    <PlayerTrack
-      v-for="{
-        playerId,
-        name: playername,
-        speed,
-        playerRank,
-        playerPos,
-      } in allPlayers"
-      :playerPos="playerPos"
-      :playerName="playername"
-      :WPM="speed"
-      :rank="playerRank"
-      :key="playerId"
-    />
-
-    <div class="textBox">
-      <span
-        v-for="(el, index) in sample"
-        :class="{ danger: index == sampleIdx }"
-      >
-        {{ el + " " }}
-      </span>
+    <div v-if="isTextFetched === null" class="loadingDiv messageSections">
+      <i class="pi pi-spin pi-spinner" style="font-size: 30px"></i>
+      <p>Loading Game</p>
+      <div class="btnContainer">
+        <Button @click="quitRace" class="p-button-warning">Quit Race</Button>
+      </div>
     </div>
-    <InputText
-      type="text"
-      v-model="text"
-      class="inputText"
-      :maxlength="maxLength"
-      :class="{ danger: !correct }"
-      placeholder="Type here"
-      :autofocus="startIn == 0"
-      :disabled="isCompleted || startIn != 0"
-    />
-    <div class="btnContainer">
-      <Button @click="quitRace" class="p-button-warning">Quit Race</Button>
-      <Button
-        class="p-button-success"
-        v-if="isCompleted"
-        @click="
-          () => {
-            console.log('race again');
-          }
-        "
-        >Race Again</Button
-      >
-    </div>
-
-    <div class="resultStats" v-if="isCompleted">
-      <h3 :style="{ marginBottom: '10px' }">Your performance:</h3>
-      <table>
-        <tr>
-          <th>Your Speed:</th>
-          <td>{{ allPlayers.value[0].speed }} WPM</td>
-        </tr>
-
-        <tr>
-          <th>time:</th>
-          <td>{{ timeConsumed }} Secs</td>
-        </tr>
-        <tr>
-          <th>Accuracy:</th>
-          <td>Under Construction</td>
-        </tr>
-      </table>
+    <div v-if="isTextFetched === false" class="errorDiv messageSections">
+      <i class="pi pi-exclamation-triangle" style="font-size: 30px"></i>
+      <p>Error Occurred while Loading Game, Sorry for inconvenience.</p>
+      <div class="btnContainer">
+        <Button @click="quitRace" class="p-button-warning">Quit Race</Button>
+      </div>
     </div>
   </div>
 </template>
 
 <style>
+#raceContainer {
+  width: 100vw;
+}
+
 .textBox {
   margin: 20px auto;
   border: 1px solid gray;
   padding: 10px;
   width: 90%;
+  color: var(--text-color);
+  font-weight: 500;
   border-radius: 5px;
 }
 
-.about {
-  min-height: 100vh;
+.about,
+.messageSections {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 15px;
   justify-content: center;
 }
-
+.messageSections {
+  font-size: 25px;
+}
 .timeDiv {
   width: 100%;
   display: flex;
@@ -313,10 +347,10 @@ th {
   color: var(--text-color);
 }
 .danger {
-  background-color: rgba(206, 77, 27, 0.462);
+  background-color: #8ae5db;
 }
 input.danger {
-  background-color: rgba(206, 77, 27, 0.462);
+  background-color: rgba(206, 27, 27, 0.462);
 }
 a {
   text-decoration: none;

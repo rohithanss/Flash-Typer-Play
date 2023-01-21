@@ -39,8 +39,12 @@ textRouter.post("/add", tokenAuth, authorise(["admin"]), async (req, res) => {
   }
   try {
     let doc = await TextModel({ title, text });
-    await doc.save();
-    return res.send({ msg: "Text added successfully", status: "success" });
+    let newText = await doc.save();
+    return res.send({
+      msg: "Text added successfully",
+      newText,
+      status: "success",
+    });
   } catch (err) {
     res.send({
       msg: "Something went wrong while fetching text",

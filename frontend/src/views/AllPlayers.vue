@@ -1,16 +1,6 @@
 <template>
   <div>
     <div class="card">
-      <Toolbar class="mb-4">
-        <template #start>
-          <Button
-            label="New"
-            icon="pi pi-plus"
-            class="p-button-success mr-2"
-            @click="openNew"
-          />
-        </template>
-      </Toolbar>
       <DataTable
         ref="dt"
         :value="texts"
@@ -27,7 +17,7 @@
           <div
             class="table-header flex flex-column md:flex-row md:justify-content-between"
           >
-            <h3 class="mb-2 md:m-0 p-as-md-center">Manage Race Texts</h3>
+            <h3 class="mb-2 md:m-0 p-as-md-center">Manage Users</h3>
             <span class="p-input-icon-left">
               <i class="pi pi-search" />
               <InputText
@@ -46,17 +36,29 @@
         ></Column>
 
         <Column
-          field="title"
-          header="Title"
+          field="name"
+          header="Name"
           :sortable="true"
           style="min-width: 12rem"
         ></Column>
 
         <Column
-          field="text"
-          header="Text"
+          field="email"
+          header="Email"
           :sortable="true"
-          style="max-width: 40rem"
+          style="max-width: 12rem"
+        ></Column>
+        <Column
+          field="speed"
+          header="Speed"
+          :sortable="true"
+          style="max-width: 12rem"
+        ></Column>
+        <Column
+          field="totalRaces"
+          header="Total Races"
+          :sortable="true"
+          style="max-width: 12rem"
         ></Column>
 
         <Column :exportable="false" style="min-width: 10rem">
@@ -85,32 +87,53 @@
       class="p-fluid"
     >
       <div class="field">
-        <label for="title">Title</label>
+        <label for="name">Name</label>
         <InputText
-          id="title"
-          v-model.trim="text.title"
+          id="name"
+          v-model.trim="text.name"
           :style="{ margin: '8px 0 15px' }"
-          placeholder="Enter Title"
+          placeholder="Enter Name"
           required="true"
           autofocus
-          :class="{ 'p-invalid': submitted && !text.title }"
+          :class="{ 'p-invalid': submitted && !text.name }"
         />
-        <small class="p-error" v-if="submitted && !text.title"
+        <small class="p-error" v-if="submitted && !text.name"
           >Title is required.</small
         >
       </div>
 
       <div class="field">
-        <label for="text" :style="{ margin: '10px' }"> Text</label>
-        <Textarea
-          id="text"
-          v-model="text.text"
-          :autoResize="true"
+        <label for="email" :style="{ margin: '10px' }"> Email</label>
+        <InputText
+          id="email"
+          v-model="text.email"
+          :style="{ margin: '8px 0 15px' }"
+          placeholder="Enter Text"
+          required="true"
+          :class="{ 'p-invalid': submitted && !text.email }"
+        />
+      </div>
+
+      <div class="field">
+        <label for="speed" :style="{ margin: '10px' }"> Speed</label>
+        <InputText
+          id="speed"
+          v-model="text.speed"
+          disabled
           :style="{ margin: '8px 0 15px' }"
           placeholder="Enter Text"
         />
       </div>
-
+      <div class="field">
+        <label for="totalRaces" :style="{ margin: '10px' }"> Total Races</label>
+        <InputText
+          id="totalRaces"
+          v-model="text.totalRaces"
+          disabled
+          :style="{ margin: '8px 0 15px' }"
+          placeholder="Enter Text"
+        />
+      </div>
       <template #footer>
         <Button
           label="Cancel"
@@ -167,9 +190,9 @@ import axios from "axios";
 const url = inject("backendURL");
 
 onMounted(async () => {
-  let allTexts = await getTexts();
+  let allPlayers = await getPlayers();
 
-  texts.value = await allTexts.data;
+  texts.value = await allPlayers.users;
 });
 
 const toast = useToast();
@@ -185,24 +208,18 @@ const filters = ref({
 
 const submitted = ref(false);
 
-const getTexts = async () => {
+const getPlayers = async () => {
   try {
-    let allTexts = await axios.get(`${url}/text/all`, {
+    let allPlayers = await axios.get(`${url}/user/allplayers`, {
       headers: {
         authorization: `bearer ${localStorage.getItem("token")}`,
       },
     });
 
-    return allTexts.data;
+    return allPlayers.data;
   } catch (err) {
     console.log(err);
   }
-};
-
-const openNew = () => {
-  text.value = {};
-  submitted.value = false;
-  textDialog.value = true;
 };
 
 const hideDialog = () => {
@@ -212,15 +229,15 @@ const hideDialog = () => {
 
 const saveText = async () => {
   submitted.value = true;
-  let { title, text: textVal, _id } = text.value;
-  if (title.trim() !== "" || text.trim() !== "") {
+  let { name, email: emailVal, _id } = text.value;
+  if (name.trim() !== "" && emailVal.trim() !== "") {
     if (_id) {
       try {
         let res = await axios.patch(
-          `${url}/text/edit/${_id}`,
+          `${url}/user/edit/${_id}`,
           {
-            title,
-            text: textVal,
+            name,
+            email: emailVal,
           },
           {
             headers: {
@@ -232,24 +249,24 @@ const saveText = async () => {
         if (res.status == "success") {
           toast.add({
             severity: "success",
-            summary: "Updating Text",
-            detail: "Text Updated Successfully.",
+            summary: "Updating Player",
+            detail: "Player Updated Successfully.",
             life: 3000,
           });
           for (let i = 0; i < texts.value.length; i++) {
             if (texts.value[i]._id == _id) {
               console.log(texts.value);
-              texts.value[i].title = title;
-              texts.value[i].text = textVal;
+              texts.value[i].name = name;
+              texts.value[i].email = emailVal;
               break;
             }
           }
         } else {
           toast.add({
             severity: "warn",
-            summary: "Updating Text",
+            summary: "Updating Player",
             detail:
-              "Something went wrong while updating Text info, try again after some time.",
+              "Something went wrong while updating Player info, try again after some time.",
             life: 3000,
           });
         }
@@ -257,51 +274,9 @@ const saveText = async () => {
         console.log(err);
         toast.add({
           severity: "warn",
-          summary: "Updating Text",
+          summary: "Updating Player",
           detail:
-            "Something went wrong while updating Text info, try again after some time.",
-          life: 3000,
-        });
-      }
-    } else {
-      try {
-        let res = await axios.post(
-          `${url}/text/add`,
-          {
-            title,
-            text: textVal,
-          },
-          {
-            headers: {
-              authorization: `bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        res = res.data;
-        if (res.status == "success") {
-          toast.add({
-            severity: "success",
-            summary: "Adding Text",
-            detail: "Text Added Successfully.",
-            life: 3000,
-          });
-          texts.value.push(res.newText);
-        } else {
-          toast.add({
-            severity: "warn",
-            summary: "Adding Text",
-            detail:
-              "Something went wrong while Adding Text info, try again after some time.",
-            life: 3000,
-          });
-        }
-      } catch (err) {
-        console.log(err);
-        toast.add({
-          severity: "warn",
-          summary: "Adding Text",
-          detail:
-            "Something went wrong while Adding Text info, try again after some time.",
+            "Something went wrong while updating Player info, try again after some time.",
           life: 3000,
         });
       }
@@ -327,7 +302,7 @@ const deleteText = async () => {
 
   text.value = {};
   try {
-    let res = await axios.delete(`${url}/text/delete/${_id}`, {
+    let res = await axios.delete(`${url}/user/delete/${_id}`, {
       headers: {
         authorization: `bearer ${localStorage.getItem("token")}`,
       },
@@ -336,8 +311,8 @@ const deleteText = async () => {
     if (res.status == "success") {
       toast.add({
         severity: "success",
-        summary: "Deleting Text",
-        detail: "Text Deleted Successfully.",
+        summary: "Deleting Player",
+        detail: "Player Deleted Successfully.",
         life: 3000,
       });
       let idx;
@@ -351,18 +326,18 @@ const deleteText = async () => {
     } else {
       toast.add({
         severity: "warn",
-        summary: "Deleting Text",
+        summary: "Deleting Player",
         detail:
-          "Something went wrong while Deleting Text info, try again after some time.",
+          "Something went wrong while Deleting Player info, try again after some time.",
         life: 3000,
       });
     }
   } catch (err) {
     toast.add({
       severity: "warn",
-      summary: "Deleting Text",
+      summary: "Deleting Player",
       detail:
-        "Something went wrong while Deleting Text info, try again after some time.",
+        "Something went wrong while Deleting Player info, try again after some time.",
       life: 3000,
     });
   }
