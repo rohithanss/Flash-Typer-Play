@@ -3,6 +3,7 @@ import axios from "axios";
 import { ref, inject } from "vue";
 import { RouterView } from "vue-router";
 import NavBar from "./components/NavBar.vue";
+import FooterBar from "./components/FooterBar.vue";
 
 const isLoggedIn = inject("isLoggedIn");
 const url = inject("backendURL");
@@ -37,6 +38,7 @@ async function logout() {
   <Toast />
   <NavBar :profile="prof" @logout="logout" />
   <RouterView />
+  <FooterBar />
 </template>
 
 <style scoped></style>
