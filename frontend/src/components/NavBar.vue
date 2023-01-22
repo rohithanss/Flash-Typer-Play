@@ -18,11 +18,11 @@ function logout() {
     <div class="guestOptions options" v-if="props.profile.status == false">
       <h3><RouterLink to="/">Home</RouterLink></h3>
 
-      <Button class="p-button-success"
-        ><RouterLink to="/login">Login</RouterLink></Button
+      <RouterLink to="/login"
+        ><Button class="p-button-success">Login</Button></RouterLink
       >
-      <Button class="p-button-warning"
-        ><RouterLink to="/signup">Signup</RouterLink></Button
+      <RouterLink to="/signup"
+        ><Button class="p-button-warning">Signup</Button></RouterLink
       >
     </div>
     <div class="userOptions options" v-if="props.profile.status == true">
@@ -43,6 +43,9 @@ function logout() {
 #container {
   display: flex;
   padding: 10px 30px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
   justify-content: space-between;
   align-items: center;
   background-color: var(--surface-300);
@@ -81,6 +84,11 @@ a.router-link-active {
 @media screen and (max-width: 655px) {
   .logo {
     width: 50%;
+  }
+}
+@media screen and (max-width: 450px) {
+  .logo {
+    width: 80%;
   }
 }
 </style>

@@ -78,7 +78,7 @@ const createPersonalTrack = () => {
         >
       </div>
     </div>
-    <LeaderBoard class="cards" :style="{ width: '80vw' }" />
+    <LeaderBoard class="cards leaderBoard" />
   </div>
 </template>
 
@@ -181,6 +181,10 @@ const createPersonalTrack = () => {
   opacity: 0;
 }
 
+#container .leaderBoard {
+  width: 80vw;
+}
+
 @media screen and (max-width: 975px) {
   #card-container {
     grid-template-areas:
@@ -225,6 +229,9 @@ const createPersonalTrack = () => {
 
 @media screen and (max-width: 530px) {
   #card-container {
+    width: 90%;
+  }
+  #container .leaderBoard {
     width: 90%;
   }
   .startRaceCard .startBtn {
