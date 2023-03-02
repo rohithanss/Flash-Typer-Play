@@ -17,6 +17,17 @@ Flash Typer Play is an online typing game that allows players to compete with ea
 > If there is only one player in the race, the race will not start until the another players join the race
 
   - If a player is logged in his Name will be shown
+<img src="https://i.imgur.com/kd5KYxA.png"/>
+
+> - As soon as other player will joins the race, 10 seconds timer will start
+> - More players can join only in these 10 seconds
+> - After the 10 seconds end the room will be closed for new players and the race will start
+> - If player type wrong spelling after typing few words the input will stop and player will not be able to type, and red background appear.
+
+### LeaderBoard
+
+- Top Ten Players name, typing speed and Total races will appear on the leaderboard
+<img src="https://i.imgur.com/1aJFeZr.png"/>
 
 ### Role Based Access
 - Type of Users
