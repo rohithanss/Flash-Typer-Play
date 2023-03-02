@@ -12,7 +12,7 @@ Flash Typer Play is an online typing game that allows players to compete with ea
 
 - Click on **Start Race** button on the home screen to start a race 
   - If a player is not Logged, his name will be shown as *Guest*
-<img src="https://i.imgur.com/fiYVweT.png"/>
+<img src="https://i.imgur.com/QbnUj6H.png"/>
 
 > If there is only one player in the race, the race will not start until the another players join the race
 
