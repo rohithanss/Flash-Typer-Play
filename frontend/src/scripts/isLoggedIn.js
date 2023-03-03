@@ -10,7 +10,6 @@ async function isLoggedIn(url) {
         },
       });
       res = await res.data;
-      console.log(res);
       if (res.status == "success") {
         return {
           status: true,
@@ -22,7 +21,6 @@ async function isLoggedIn(url) {
         return { status: false, msg: "not logged in" };
       }
     } catch (err) {
-      console.log(err);
       return { status: false, msg: "not logged in" };
     }
   } else {

@@ -19,7 +19,6 @@ async function raceSocket(socket) {
       roomDetails.members = 0;
       roomDetails.status = true;
     } catch (err) {
-      console.log(err);
       roomDetails.status = false;
     }
   } else {

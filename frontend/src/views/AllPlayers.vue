@@ -218,7 +218,7 @@ const getPlayers = async () => {
 
     return allPlayers.data;
   } catch (err) {
-    console.log(err);
+    return err;
   }
 };
 
@@ -255,7 +255,6 @@ const saveText = async () => {
           });
           for (let i = 0; i < texts.value.length; i++) {
             if (texts.value[i]._id == _id) {
-              console.log(texts.value);
               texts.value[i].name = name;
               texts.value[i].email = emailVal;
               break;
@@ -271,7 +270,6 @@ const saveText = async () => {
           });
         }
       } catch (err) {
-        console.log(err);
         toast.add({
           severity: "warn",
           summary: "Updating Player",

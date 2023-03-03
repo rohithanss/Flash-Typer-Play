@@ -195,7 +195,7 @@ const getTexts = async () => {
 
     return allTexts.data;
   } catch (err) {
-    console.log(err);
+    return;
   }
 };
 
@@ -238,7 +238,6 @@ const saveText = async () => {
           });
           for (let i = 0; i < texts.value.length; i++) {
             if (texts.value[i]._id == _id) {
-              console.log(texts.value);
               texts.value[i].title = title;
               texts.value[i].text = textVal;
               break;
@@ -254,7 +253,6 @@ const saveText = async () => {
           });
         }
       } catch (err) {
-        console.log(err);
         toast.add({
           severity: "warn",
           summary: "Updating Text",
@@ -296,7 +294,6 @@ const saveText = async () => {
           });
         }
       } catch (err) {
-        console.log(err);
         toast.add({
           severity: "warn",
           summary: "Adding Text",
