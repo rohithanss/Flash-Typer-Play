@@ -44,9 +44,9 @@ async function sendMail(email, otp) {
     },
     (err, info) => {
       if (err) {
-        console.log(err);
+        return err;
       } else {
-        console.log(info);
+        return info;
       }
     }
   );

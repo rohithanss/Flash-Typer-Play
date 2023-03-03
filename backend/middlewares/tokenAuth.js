@@ -11,13 +11,11 @@ async function tokenAuth(req, res, next) {
   }
   try {
     let decoded = jwt.verify(token, process.env.SECRET_KEY);
-    // res.send(decoded);
 
     req.body.userId = decoded.userId;
     req.body.userRole = decoded.userRole;
     next();
   } catch (err) {
-    // console.log(err);
     res.send({ msg: "invalid token", status: err.message });
   }
 }

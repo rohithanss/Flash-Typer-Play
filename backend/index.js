@@ -59,7 +59,6 @@ io.on("connection", async (socket) => {
       roomDetails.members = 0;
       roomDetails.status = true;
     } catch (err) {
-      console.log(err);
       roomDetails.status = false;
     }
   } else {
@@ -137,7 +136,6 @@ server.listen(PORT, async () => {
     await connection;
     console.log("connected to db");
   } catch (err) {
-    console.log(err);
     console.log("error while connecting to db");
   }
   console.log(`Listening at \nhttp://localhost:7070/`);

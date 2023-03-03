@@ -36,7 +36,6 @@ userRouter.post("/signup", async (req, res) => {
     }
     bcrypt.hash(password, 5, async (err, hash) => {
       if (err) {
-        console.log(err);
         res.send({
           msg: "error while signing up try again",
           status: "error",
@@ -63,7 +62,6 @@ userRouter.post("/signup", async (req, res) => {
       }
     });
   } catch (err) {
-    console.log(err);
     res.send({ msg: "error registering", status: "error" });
   }
 });
@@ -106,7 +104,6 @@ userRouter.get("/profile", tokenAuth, async (req, res) => {
     let { name, _id, role } = await UserModel.findOne({ _id: userId });
     res.send({ name, userId: _id, role, status: "success" });
   } catch (err) {
-    console.log(err);
     res.send({ msg: "something Went wrong! try again later", status: "error" });
   }
 });
@@ -136,7 +133,6 @@ userRouter.post("/resetpassword", async (req, res) => {
       }
       bcrypt.hash(password, 5, async (err, hash) => {
         if (err) {
-          console.log(err);
           res.send({
             msg: "error while signing up try again",
             status: "error",
@@ -163,7 +159,6 @@ userRouter.post("/resetpassword", async (req, res) => {
         }
       });
     } catch (err) {
-      console.log(err);
       res.send({ msg: "error changing password", status: "error" });
     }
   }
@@ -178,7 +173,6 @@ userRouter.get("/topplayers", async (req, res) => {
 
     res.send({ players: topPlayers, status: "success" });
   } catch (err) {
-    console.log(err);
     res.send({
       msg: "error while fetching the top users from db",
       status: "error",
@@ -216,7 +210,6 @@ userRouter.patch(
       res.send({ msg: "user updated successfully", status: "success" });
     } catch (err) {
       res.send({ msg: "something went wrong", status: "error" });
-      console.log(err);
     }
   }
 );
@@ -233,7 +226,6 @@ userRouter.delete(
       res.send({ msg: "user deleted successfully", status: "success" });
     } catch (err) {
       res.send({ msg: "something went wrong", status: "error" });
-      console.log(err);
     }
   }
 );
