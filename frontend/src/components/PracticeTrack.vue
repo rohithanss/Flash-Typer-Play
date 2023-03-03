@@ -133,7 +133,6 @@ async function getText() {
     let res = await axios.get(`${url}/text`);
     res = await res.data;
     if (res.status == "success") {
-      console.log(res.text);
       sample.value = res.text.text.split(" ");
       allotedTime.value = sample.value.length * (60 / 20);
       remainTime.value = sample.value.length * (60 / 20);
@@ -152,7 +151,6 @@ async function getText() {
       detail: "Error occurred while starting race, try again later",
       life: 3000,
     });
-    console.log("error occurred while starting race, try again later");
   }
 }
 
@@ -215,14 +213,7 @@ getText();
         >Ready</Button
       >
       <Button @click="quitRace" class="p-button-warning">Quit Race</Button>
-      <Button
-        class="p-button-success"
-        v-if="isCompleted"
-        @click="
-          () => {
-            console.log('race again');
-          }
-        "
+      <Button class="p-button-success" v-if="isCompleted" :disabled="true"
         >Race Again</Button
       >
     </div>

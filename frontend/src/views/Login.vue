@@ -28,7 +28,7 @@ const v$ = useVuelidate(rules, { password, email1 });
 async function login(isValid) {
   submitted.value = true;
   if (!isValid) {
-    console.log("yoo");
+    return;
   } else {
     isLoading.value = true;
     try {
@@ -37,7 +37,6 @@ async function login(isValid) {
         password: password.value,
       });
       res = res.data;
-      console.log(res);
       if (res.status == "success") {
         localStorage.setItem("token", res.token);
         localStorage.setItem("refreshToken", res.refreshToken);
@@ -56,7 +55,6 @@ async function login(isValid) {
           life: 3000,
         });
       } else {
-        console.log("af");
         toast.add({
           severity: "warn",
           summary: "Logging in fail",

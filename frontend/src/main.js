@@ -50,5 +50,3 @@ app.use(ToastService);
 app.use(router);
 app.use(PrimeVue);
 app.mount("#app");
-
-// console.log(await isLoggedIn("http://localhost:7070"));

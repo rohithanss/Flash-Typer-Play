@@ -28,9 +28,8 @@ async function logout() {
     );
     res = await res.data;
     prof.value = { status: false };
-    console.log(res);
   } catch (err) {
-    console.log(err);
+    return;
   }
 }
 </script>

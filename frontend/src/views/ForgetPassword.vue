@@ -72,7 +72,13 @@ async function sendOtp(isValid) {
 async function validateOtp() {
   isLoading.value = true;
   if (!isPasswordValid.value) {
-    return console.log("Password length should be atleast 8");
+    toast.add({
+      severity: "info",
+      summary: "Invalid Password",
+      detail: "Password length should be at least 8",
+      life: 3000,
+    });
+    return;
   } else {
     try {
       let res = await axios.post(`${url}/user/resetpassword`, {

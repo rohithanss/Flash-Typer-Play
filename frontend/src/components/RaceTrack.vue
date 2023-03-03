@@ -108,7 +108,6 @@ function calculateTime(totalWords, wordTyped, seconds) {
 function startTimer() {
   intervalId.value = setInterval(() => {
     --remainTime.value;
-    console.log(remainTime.value);
     if (remainTime.value == 0) {
       clearInterval(intervalId.value);
 
@@ -156,7 +155,6 @@ async function connectSocket() {
     startIn.value = timer;
   });
   socketId.on("start", (msg) => {
-    console.log(msg);
     startTimer();
   });
 

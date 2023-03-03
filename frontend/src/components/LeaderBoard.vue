@@ -16,7 +16,6 @@ async function getTopPlayers() {
       topPlayers.value = false;
     }
   } catch (err) {
-    console.log(err);
     topPlayers.value = false;
   }
 }
