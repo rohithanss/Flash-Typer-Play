@@ -1,6 +1,31 @@
 # Flash-Typer-Play
 Flash Typer Play is an online typing game that allows players to compete with each other based on their typing speed. Players can compete against others in real-time or race against their own best times.
 
+## Languages and Tools Used
+
+<p align="left"><a href="https://vuejs.org/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/vuejs/vuejs-original-wordmark.svg" alt="vuejs" width="40" height="40"/> </a> <a href="https://www.w3schools.com/css/" target="_blank" rel="noreferrer"> <a href="https://expressjs.com" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/express/express.png" style="width:40px; height:40px" alt="HTML icon"/> </a>  <a href="https://www.mongodb.com/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original-wordmark.svg" alt="mongodb" width="40" height="40"/> </a> <a href="https://nodejs.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg" alt="nodejs" width="40" height="40"/> </a> <a href="https://redis.io" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/redis/redis-original-wordmark.svg" alt="redis" width="40" height="40"/> </a> 
+<img src="https://rohithanss.github.io/skills/socket.png" alt="redis" width="40px"/> </p>
+
+## Packages used
+
+- "bcrypt": "^5.1.0",
+- "cookie-parser": "^1.4.6",
+- "cors": "^2.8.5",
+- "dotenv": "^16.0.3",
+- "express": "^4.18.2",
+- "ioredis": "^5.2.5",
+- "jsonwebtoken": "^9.0.0",
+- "mongoose": "^6.8.4",
+- "nodemailer": "^6.9.0",
+- "nodemon": "^2.0.20",
+- "socket.io": "^4.5.4",
+- "uid": "^2.0.1"
+
+## Short Demo Video
+
+https://user-images.githubusercontent.com/77886226/222884594-aff33c8c-4be6-4647-bce2-11a1eb186516.mp4
+
+
 ## Features
 
 ### E-mail Validation
