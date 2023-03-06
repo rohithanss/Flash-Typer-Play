@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+// FUNCTION TO GENERATE TOKEN AND REFRESH TOKEN FOR LOGGED IN USERS
+
 function generateToken(res, userId, userRole) {
   let token = jwt.sign({ userId, userRole }, process.env.SECRET_KEY, {
     expiresIn: "1h",

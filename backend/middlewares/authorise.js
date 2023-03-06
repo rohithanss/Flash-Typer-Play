@@ -1,3 +1,5 @@
+// MIDDLEWARE TO AUTHORISE , WHETHER THE USER HAS ACCESS TO A PARTICULAR ENDPOINT BASED ON USER ROLE
+
 function authorise(permittedRole) {
   return (req, res, next) => {
     let role = req.body.userRole;

@@ -4,7 +4,11 @@ const TextModel = require("../models/TextModel.js");
 const tokenAuth = require("../middlewares/tokenAuth");
 const authorise = require("../middlewares/authorise");
 
+// THIS ENDPOINT HAS ALL THE RACE TEXTS/SENTENCES RELATED ENDPOINTS FOR BOTH USER/ADMIN AND ADMIN
+
 const textRouter = Router();
+
+// ENDPOINT TO GET ONE RANDOM RACE TEXTS, OPEN FOR ALL..
 
 textRouter.get("/", async (req, res) => {
   try {
@@ -19,6 +23,8 @@ textRouter.get("/", async (req, res) => {
   }
 });
 
+// ENDPOINT TO GET ALL RACE TEXTS, ONLY ADMIN HAS ACCESS
+
 textRouter.get("/all", tokenAuth, authorise(["admin"]), async (req, res) => {
   try {
     let text = await TextModel.find();
@@ -31,6 +37,8 @@ textRouter.get("/all", tokenAuth, authorise(["admin"]), async (req, res) => {
     });
   }
 });
+
+// ENDPOINT TO ADD NEW RACE TEXT, ONLY ADMIN HAS ACCESS
 
 textRouter.post("/add", tokenAuth, authorise(["admin"]), async (req, res) => {
   let { title, text, userId } = req.body;
@@ -52,6 +60,8 @@ textRouter.post("/add", tokenAuth, authorise(["admin"]), async (req, res) => {
     });
   }
 });
+
+// ENDPOINT TO UPDATE/EDIT RACE TEXT, ONLY ADMIN HAS ACCESS
 
 textRouter.patch(
   "/edit/:textId",
@@ -88,6 +98,8 @@ textRouter.patch(
   }
 );
 
+// ENDPOINT TO DELETE RACE TEXT, ONLY ADMIN HAS ACCESS
+
 textRouter.delete(
   "/delete/:textId",
   tokenAuth,
@@ -116,4 +128,5 @@ textRouter.delete(
     }
   }
 );
+
 module.exports = textRouter;

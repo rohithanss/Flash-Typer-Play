@@ -9,7 +9,11 @@ const UserModel = require("../models/UserModel");
 const generateToken = require("../services/generateToken.js");
 const authorise = require("../middlewares/authorise.js");
 
+// THIS ENDPOINT HAS ALL THE USERS RELATED ENDPOINTS FOR BOTH USER/PLAYER AND ADMIN
+
 const userRouter = Router();
+
+// ENDPOINT FOR CREATING NEW USER/PLAYER ACCOUNT
 
 userRouter.post("/signup", async (req, res) => {
   let { name, email, password, role, otp } = req.body;
@@ -25,7 +29,7 @@ userRouter.post("/signup", async (req, res) => {
   let userExist = await UserModel.findOne({ email });
 
   try {
-    let validOtp = await redis.get(email + "otp");
+    let validOtp = await redis.get(email + "otp"); // VALIDATING OTP
 
     if (validOtp != otp) {
       return res.send({ msg: "invalid otp", status: "fail" });
@@ -47,8 +51,11 @@ userRouter.post("/signup", async (req, res) => {
           password: hash,
           role: role == undefined ? "user" : role,
         });
-        let savedUser = await user.save();
+
+        let savedUser = await user.save(); // SAVING USER IN THE DB
+
         let { token, refreshToken } = generateToken(
+          // GENERATING TOKEN AND REFRESH TOKEN, SO THE USER DON'T HAVE TO LOGIN AFTER SIGNING UP
           res,
           savedUser._id,
           savedUser.role
@@ -66,13 +73,18 @@ userRouter.post("/signup", async (req, res) => {
   }
 });
 
+// ENDPOINT FOR THE LOGGING IN FOR THE USER/PLAYER AND ADMIN
+
 userRouter.post("/login", async (req, res) => {
   let { email, password } = req.body;
+
   if (email == undefined || password == undefined) {
     res.send({ msg: "some fields are missing", status: "fail" });
     return;
   }
+
   let userExist = await UserModel.find({ email });
+
   if (userExist.length == 0) {
     res.send({ msg: "wrong Credentials", status: "fail" });
   } else {
@@ -97,9 +109,11 @@ userRouter.post("/login", async (req, res) => {
   }
 });
 
+// ENDPOINT TO GET USERS DETAIL, NAME , AND ROLE TO SHOW ON THE FRONTEND
+
 userRouter.get("/profile", tokenAuth, async (req, res) => {
   let userId = req.body.userId;
-  // res.send("asdf");
+
   try {
     let { name, _id, role } = await UserModel.findOne({ _id: userId });
     res.send({ name, userId: _id, role, status: "success" });
@@ -108,18 +122,25 @@ userRouter.get("/profile", tokenAuth, async (req, res) => {
   }
 });
 
+// ENDPOINT TO LOGOUT USER
+
 userRouter.post("/logout", tokenAuth, async (req, res) => {
   let token = req.headers.authorization?.split(" ")[1] || req.cookies?.token;
-  await redis.lpush("blacklist_tokens", token);
+  await redis.lpush("blacklist_tokens", token); // ADDING THE TOKEN IN THE BLACKLIST, SO THAT THE SAME TOKEN CANNOT BE USED AGAIN AFTER LOGGING IN
   res.send({ msg: "logged out successfully", status: "success" });
 });
 
+// ENDPOINT FOR THE FORGET PASSWORD
+
 userRouter.post("/resetpassword", async (req, res) => {
   let { email, password, otp } = req.body;
+
   if (email == undefined || password == undefined || otp == undefined) {
     return res.send({ msg: "some fields are missing", status: "fail" });
   }
-  let userExist = await UserModel.findOne({ email });
+
+  let userExist = await UserModel.findOne({ email }); // VALIDATING WHETHER THE USER HAS AN ACCOUNT OR NOT
+
   if (!userExist?.email) {
     res.send({
       msg: "user does not exists",
@@ -127,7 +148,8 @@ userRouter.post("/resetpassword", async (req, res) => {
     });
   } else {
     try {
-      let validOtp = await redis.get(email + "otp");
+      let validOtp = await redis.get(email + "otp"); // VALIDATING THE OTP
+
       if (validOtp != otp) {
         return res.send({ msg: "invalid otp", status: "fail" });
       }
@@ -138,12 +160,16 @@ userRouter.post("/resetpassword", async (req, res) => {
             status: "error",
           });
         } else {
+          // UPDATING NEW PASSWORD IN THE DB
+
           let user = await UserModel.findOneAndUpdate(
             { email },
             {
               password: hash,
             }
           );
+
+          // GENERATING TOKEN AND REFRESH TOKEN, SO THE USER DON'T HAVE TO LOGIN AFTER CHANGING PASSWORD
 
           let { token, refreshToken } = generateToken(
             res,
@@ -164,6 +190,8 @@ userRouter.post("/resetpassword", async (req, res) => {
   }
 });
 
+// ENDPOINT TO GET TOP TEN PLAYERS TYPING SPEED AND NAME TO DISPLAY NAMES ON THE LEADER BOARD.
+
 userRouter.get("/topplayers", async (req, res) => {
   try {
     let topPlayers = await UserModel.aggregate()
@@ -180,6 +208,8 @@ userRouter.get("/topplayers", async (req, res) => {
   }
 });
 
+// ENDPOINT TO GET ALL PLAYERS/USERS, ONLY ADMIN HAS ACCESS
+
 userRouter.get(
   "/allplayers",
   tokenAuth,
@@ -193,6 +223,8 @@ userRouter.get(
     }
   }
 );
+
+// ENDPOINT TO UPDATE PLAYERS/USERS' NAME OR EMAIL, ONLY ADMIN HAS ACCESS
 
 userRouter.patch(
   "/edit/:userId",
@@ -213,6 +245,8 @@ userRouter.patch(
     }
   }
 );
+
+// ENDPOINT TO DELETE PLAYERS/USERS, ONLY ADMIN HAS ACCESS
 
 userRouter.delete(
   "/delete/:userId",
