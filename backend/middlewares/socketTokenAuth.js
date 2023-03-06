@@ -1,3 +1,5 @@
+//  MIDDLEWARE TO AUTHENTICATE THE USERS, WHO ARE CONNECTING TO SOCKETS, AND SAVING THERE ID, NAME IN THE REDIS
+
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const redis = require("../services/redis.js");

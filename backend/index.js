@@ -40,10 +40,15 @@ app.use("/user", userRouter);
 app.use("/text", textRouter);
 app.use("/getotp", generateOtpRouter);
 
+// SETTING THE SOCKET FOR THE ESTABLISHING CONNECTIONS AND EMITTING AND LISTENING TO RACE EVENTS
+
 const io = new Server(server, { cors: { origin: "*" }, path: "/play" });
+
 io.use(socketTokenAuth);
-const roomDetails = { roomId: null, textId: null, members: 0, status: false };
-let players = [];
+
+const roomDetails = { roomId: null, textId: null, members: 0, status: false }; // CURRENT OPEN ROOM DETAILS
+
+let players = []; // CURRENT ROOM PLAYERS
 
 io.on("connection", async (socket) => {
   let intervalId;
@@ -66,6 +71,7 @@ io.on("connection", async (socket) => {
   }
 
   socket.join(roomDetails.roomId);
+
   roomDetails.members++;
   let player = {
     playerId: socket.id,
@@ -77,7 +83,9 @@ io.on("connection", async (socket) => {
   };
 
   socket.emit("room-joined", roomDetails, text, [player, ...players]);
+
   socket.to(roomDetails.roomId).emit("newPlayer", player);
+
   players.push(player);
 
   if (roomDetails.members == 2) {
