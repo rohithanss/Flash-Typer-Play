@@ -4,8 +4,8 @@ require("dotenv").config();
 // CONFIGURING REDIS
 
 const redis = new Redis({
-  port: 18596, // Redis port
-  host: "redis-18596.c305.ap-south-1-1.ec2.cloud.redislabs.com", // Redis host
+  port: 13222, // Redis port
+  host: process.env.REDIS_URI, // Redis host
   username: "default", // needs Redis >= 6
   password: process.env.REDIS_PASSWORD,
   db: 0, // Defaults to 0
