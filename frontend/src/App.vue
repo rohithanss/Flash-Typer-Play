@@ -8,6 +8,7 @@ import FooterBar from "./components/FooterBar.vue";
 const isLoggedIn = inject("isLoggedIn");
 const url = inject("backendURL");
 
+
 const prof = ref({ status: false });
 async function abc() {
   prof.value = await isLoggedIn(url);
